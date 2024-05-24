@@ -35,6 +35,7 @@ def handle_hello():
 @app.route('/member', methods=['POST'])
 def add_member():
     body = request.get_json(silent=True)
+    new_id = 0
     if body is None:
         return "Body of the request shouldn't be empty", 400
     if "first_name" not in body:
@@ -43,17 +44,37 @@ def add_member():
         return "You need to add an age", 400
     if "lucky_numbers" not in body:
         return "You need to add at least one lucky number", 400
+    if "id" in body:
+        new_id = body["id"]
+    if "id" not in body:
+        new_id = jackson_family._generateId()
     new_member = {
         "first_name": body["first_name"],
-        "id": jackson_family._generateId(),
+        "id": new_id,
         "age":  body["age"],
         "last_name": jackson_family.last_name,
-        "lucky_numbers":    body["lucky_numbers"]
+        "lucky_numbers": body["lucky_numbers"]
     }
     print(new_member)
     jackson_family.add_member(new_member)
-    return jsonify({"msg":"New member added"}), 201
-    
+    return jsonify({"msg":"New member added"}), 200
+
+
+@app.route('/member/<int:id>', methods=['GET'])
+def handle_single_member(id):
+    # this is how you can use the Family datastructure by calling its methods
+    single_id = id
+    single_member_data = jackson_family.get_member(single_id)
+    if "first_name" not in single_member_data:
+        return "no coincidences, please check id", 404
+    return single_member_data, 200
+
+@app.route('/member/<int:id>', methods=['DELETE'])
+def handle_delete(id):
+    updated_list_data = jackson_family.delete_member(id)
+    if updated_list_data == None:
+        {"Error": "Please check id"}
+    return  {"done": True}, 200
 
 
 # this only runs if `$ python src/app.py` is executed

@@ -47,12 +47,18 @@ class FamilyStructure:
 
     def delete_member(self, id):
         # fill this method and update the return
-        pass
+        for member in self._members:
+            if member['id'] == id:
+                position = self._members.index(member)
+                self._members.pop(position)
+                return self._members
 
     def get_member(self, id):
         # fill this method and update the return
-        pass
-
+        for member in self._members:
+            if member['id'] == id:
+                single_member = member.copy()
+                return single_member
     # this method is done, it returns a list with all the family members
     def get_all_members(self):
         return self._members
